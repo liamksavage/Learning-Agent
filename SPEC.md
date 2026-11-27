@@ -133,7 +133,7 @@ Runs Sunday to Friday at 6:30am Eastern. Saturday has no run.
 2. Settle yesterday. If yesterday's lesson has a reply recorded, it is already done. If not, mark it `pending` and ask about it in today's message (section 6).
 3. Pick today's lesson by the weekday and the cursor:
    - Mon–Thu: the next `read`, `listen` or `exercise` lesson at the cursor.
-   - Fri: the unit's `write` lesson. If the reads it depends on aren't done, serve the next read instead and say why.
+   - Fri: the unit's `write` lesson, but only if every reading it depends on is done. If readings are still outstanding (because days were missed earlier in the week), Friday serves the next unfinished reading instead and says why. The write then lands on the first day after the readings are complete, even if that is next week. You never write a reconstruction of a text you haven't read. If this happens often, the fix is to add a second writing day to the week, not to write from half-read material.
    - Sun: seminar (section 8).
 4. Fetch the material (section 7) from the availability cache, refreshing anything stale.
 5. Build the "Today" page: lesson, exact task, note prompt, embedded excerpt or link, yesterday's note in full for the re-enter, audio for the week, then the rest of the week's lessons in order.
@@ -228,8 +228,9 @@ Cost: runs on your Claude subscription. If the agent ever needs anything that co
 
 ## 14. Decisions to confirm
 
+Settled: the writing task waits until its readings are done (section 5, Friday rule). Decided 2026-11-27.
+
 - **[confirm]** Scheduled sessions pushing to this repo: I believe a fresh scheduled session can commit and push, but I'll verify it on the first run of stage 1 and fall back to a dedicated branch if needed.
 - **[confirm]** Unreplied days count as not done and are served again the next working day.
 - **[confirm]** One stable Today page republished daily, rather than one page per day. Past days remain in notes and progress, not as pages.
-- **[confirm]** Friday with unfinished reads serves the next read, not the write.
 - **[confirm]** Run time 6:30am Eastern. The scheduler advises nudging off the half hour to avoid delays, so the actual cron will be 6:27.
