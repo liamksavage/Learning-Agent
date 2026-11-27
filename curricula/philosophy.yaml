@@ -1,0 +1,424 @@
+# Self-Taught Philosophy — curriculum data.
+# Converted from the Claude Doc "Self-Taught Philosophy Curriculum" on 2026-11-27.
+# Lessons are an ordered sequence, not dated. `original_date` records the date the
+# doc first planned a lesson for; the agent ignores it when choosing what to serve.
+#
+# Lesson kinds: read | listen | exercise | write | seminar
+# Source kinds: free-online | owned-book | paid-online | audio | video
+# Statuses live in state/progress.yaml, never here.
+
+topic: philosophy
+title: Self-Taught Philosophy
+timezone: America/New_York
+hour:
+  reenter_min: 10
+  work_min: 40
+  write_min: 10
+week:
+  work_days: [mon, tue, wed, thu]
+  write_day: fri
+  seminar_day: sun
+  rest_day: sat
+page:
+  primer: false            # stage 2 toggle: one-paragraph framing + 5-term glossary per lesson
+
+writing_standard: >
+  Each unit ends with a 400–600 word argument reconstruction: the thesis in one sentence;
+  the premises numbered; the inference steps; the strongest objection you can find; whether
+  the objection lands. Every eight to ten units, one 1,500-word essay comparing two thinkers
+  on a shared problem.
+
+phases:
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: phase-0
+    title: Orientation
+    summary: >
+      Six weeks to sharpen the tools before the long read: argument analysis, enough logic to
+      follow a proof, and a map of the whole terrain. Exit test: take a paragraph from Hume,
+      number its premises, state its conclusion, and say whether the form is valid.
+    units:
+      # ── Week 1 ────────────────────────────────────────────────────────────
+      - id: p0-w1
+        title: "Week 1: learning to read an argument"
+        goal: >
+          By the write day you can take a passage and write out what it claims, what supports
+          the claim, and where the inference happens. The Cave is the practice text because you
+          know its shape already; the job is to see it as an argument, not an image.
+        have_ready:
+          - {kind: free-online, title: "Pryor, Guidelines on Reading Philosophy", url: "http://www.jimpryor.net/teaching/guidelines/reading.html"}
+          - {kind: free-online, title: "Pryor, Guidelines on Writing a Philosophy Paper", url: "http://www.jimpryor.net/teaching/guidelines/writing.html"}
+          - {kind: free-online, title: "Pryor, Philosophical Terms and Methods (glossary)", url: "http://www.jimpryor.net/teaching/vocab/index.html"}
+          - {kind: owned-book, title: "Anthony Weston, A Rulebook for Arguments (any edition; chapter titles given, numbering shifts)"}
+          - {kind: owned-book, title: "Plato, Republic, Grube/Reeve (Hackett)"}
+          - {kind: free-online, title: "Plato, Republic, Jowett translation (Project Gutenberg)", url: "https://www.gutenberg.org/ebooks/1497"}
+        audio:
+          - {title: "Philosophize This! episodes 1–5 (the pre-Socratics through Socrates)", url: "https://www.philosophizethis.org/podcasts", note: "Light; sets up Unit 1 without effort."}
+        lessons:
+          - id: p0-w1-l1
+            kind: read
+            original_date: 2026-11-08
+            title: "Pryor, Guidelines on Reading Philosophy"
+            task: >
+              Read all of Pryor's Guidelines on Reading Philosophy (~20 min). Then read the
+              "Vocabulary Describing Arguments" page of his glossary and bookmark the glossary;
+              you'll use it for two years.
+            note_prompt: "In your own words: the difference between a valid argument and a sound one."
+            sources:
+              - {kind: free-online, title: "Guidelines on Reading Philosophy", url: "http://www.jimpryor.net/teaching/guidelines/reading.html", extract: all}
+              - {kind: free-online, title: "Philosophical Terms and Methods — Vocabulary Describing Arguments", url: "http://www.jimpryor.net/teaching/vocab/index.html", extract: {section: "Vocabulary Describing Arguments"}}
+          - id: p0-w1-l2
+            kind: read
+            original_date: 2026-11-09
+            title: "Weston, Introduction and Short Arguments"
+            task: >
+              Weston, Introduction and "Short Arguments" (premises and conclusions, reliable
+              premises, concrete language). Then find one argument in anything you read today
+              (news, a work email, a tweet) and write it as numbered premises and a conclusion.
+            note_prompt: "Was anything left unstated?"
+            sources:
+              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "Introduction; chapter 'Short Arguments'"}
+          - id: p0-w1-l3
+            kind: read
+            original_date: 2026-11-10
+            title: "Weston, Generalizations and Arguments by Analogy"
+            task: "Weston, \"Generalizations\" and \"Arguments by Analogy.\""
+            note_prompt: "Write one bad generalization you've believed and say which rule it breaks."
+            sources:
+              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "chapters 'Generalizations' and 'Arguments by Analogy'"}
+          - id: p0-w1-l4
+            kind: read
+            original_date: 2026-11-11
+            title: "Plato, Republic 514a–517a: the Cave"
+            task: >
+              Read the Cave itself (about four pages) twice, slowly. On the second pass mark
+              every "so," "therefore," "because" and "must."
+            note_prompt: "List every candidate for what the Cave is an argument FOR. There are at least three."
+            sources:
+              - {kind: free-online, title: "Republic Book 7, modernized Jowett with Stephanus numbers", url: "https://pressbooks.ulib.csuohio.edu/republic/?p=37", extract: {stephanus: "514a-517a"}}
+              - {kind: owned-book, title: "Republic, Grube/Reeve (Hackett)", locator: "Book VII, 514a–517a"}
+          - id: p0-w1-l5
+            kind: read
+            original_date: 2026-11-12
+            title: "Weston on short arguments, then Republic 517b–521b"
+            task: >
+              Weston, Introduction and "Short Arguments" for the first 20 minutes (folded in
+              from the missed day), then Republic 517b–521b, where Socrates explains the image
+              and why the philosopher must go back down. Apply Weston's rules as you read.
+            note_prompt: "Pick the one thesis the passage argues for most directly."
+            sources:
+              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "Introduction; 'Short Arguments'"}
+              - {kind: free-online, title: "Republic Book 7, modernized Jowett", url: "https://pressbooks.ulib.csuohio.edu/republic/?p=37", extract: {stephanus: "517b-521b"}}
+              - {kind: owned-book, title: "Republic, Grube/Reeve (Hackett)", locator: "Book VII, 517b–521b"}
+          - id: p0-w1-l6
+            kind: write
+            original_date: 2026-11-13
+            title: "Reconstruction 1: The Cave as an argument"
+            requires: [p0-w1-l4, p0-w1-l5]
+            task: >
+              Reconstruction 1 (400–600 words, saved under reconstructions/philosophy/unit-p0-w1/):
+              The Cave as an argument. Thesis in one sentence; numbered premises; the inference
+              steps; the strongest objection you can find; whether it lands. Don't polish. This
+              is the thing you bring to seminar.
+            note_prompt: "What was hardest to pin down: the thesis, the premises, or the inference?"
+            sources: []
+          - id: p0-w1-s1
+            kind: seminar
+            original_date: 2026-11-15
+            title: "Seminar 1: the Cave"
+            requires: [p0-w1-l6]
+            task: >
+              Bring Reconstruction 1. Claude argues that the Cave isn't an argument at all but an
+              image, and that your premises are smuggled in from elsewhere in the Republic; you
+              defend or concede, step by step. End by noting two things to change.
+            sources: []
+
+      # ── Week 2 ────────────────────────────────────────────────────────────
+      - id: p0-w2
+        title: "Week 2: argument forms and the first seminar"
+        goal: >
+          You know the half-dozen valid deductive forms by name and can spot which one a passage
+          is using. Second reconstruction, this time on a text you haven't read before.
+        audio:
+          - {title: "Peter Adamson, History of Philosophy Without Any Gaps, episodes 1–6 (Thales to Heraclitus)", url: "https://historyofphilosophy.net", note: "Twenty minutes each; denser than Philosophize This! and the one you'll keep for the next year."}
+        lessons:
+          - id: p0-w2-l1
+            kind: read
+            original_date: 2026-11-16
+            title: "Weston, Arguments about Causes and Deductive Arguments"
+            task: >
+              Weston, "Arguments about Causes" and "Deductive Arguments" (modus ponens, modus
+              tollens, hypothetical syllogism, disjunctive syllogism, dilemma, reductio ad
+              absurdum). Write one example of each form yourself, in plain English.
+            note_prompt: "Which form was the Cave reconstruction using, if any?"
+            sources:
+              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "chapters 'Arguments about Causes' and 'Deductive Arguments'"}
+          - id: p0-w2-l2
+            kind: read
+            original_date: 2026-11-17
+            title: "Weston, Extended Arguments and fallacies; revise Reconstruction 1"
+            task: >
+              Weston, "Extended Arguments" and the appendix on fallacies. Then revise
+              Reconstruction 1 using the seminar's two notes: a 20-minute edit, not a rewrite.
+              Save as v2.
+            note_prompt: "Which of the two seminar notes changed the argument, and which only the wording?"
+            sources:
+              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "chapter 'Extended Arguments'; appendix on fallacies"}
+          - id: p0-w2-l3
+            kind: read
+            original_date: 2026-11-18
+            title: "Pryor, Guidelines on Writing a Philosophy Paper"
+            task: "Read all of it. It's long, so this is the whole 40 minutes."
+            note_prompt: "The three rules your reconstruction broke."
+            sources:
+              - {kind: free-online, title: "Guidelines on Writing a Philosophy Paper", url: "http://www.jimpryor.net/teaching/guidelines/writing.html", extract: all}
+          - id: p0-w2-l4
+            kind: read
+            original_date: 2026-11-19
+            title: "Descartes, Second Meditation: the cogito"
+            task: >
+              Descartes, Meditations, Second Meditation, first five paragraphs only: the cogito
+              passage (about two pages). Read three times. Mark the inferences.
+            note_prompt: "What exactly is being concluded, and from what?"
+            sources:
+              - {kind: free-online, title: "Descartes, Meditations (Early Modern Texts PDF)", url: "https://www.earlymoderntexts.com/assets/pdfs/descartes1641.pdf", extract: {section: "Second Meditation", paragraphs: "1-5"}}
+          - id: p0-w2-l5
+            kind: write
+            original_date: 2026-11-20
+            title: "Reconstruction 2: the cogito"
+            requires: [p0-w2-l4]
+            task: >
+              Reconstruction 2 (400–600 words): the cogito. Same shape as before. The hard part:
+              is it an inference at all, or something else? Say which and defend it.
+            note_prompt: "Inference or not: which did you argue, and what's the best case for the other side?"
+            sources: []
+          - id: p0-w2-s1
+            kind: seminar
+            original_date: 2026-11-22
+            title: "Seminar 2: the cogito"
+            requires: [p0-w2-l5]
+            task: >
+              Bring Reconstruction 2. Claude presses on whether "I think" already assumes an "I,"
+              and on whether Descartes is inferring or just noticing. Note two things to change.
+            sources: []
+
+      # ── Week 3 ────────────────────────────────────────────────────────────
+      - id: p0-w3
+        title: "Week 3: logic begins"
+        goal: >
+          Validity, soundness and the counterexample method are second nature. Do the exercises
+          on paper; logic learned by reading alone doesn't stick.
+        have_ready:
+          - {kind: free-online, title: "Peter Smith, An Introduction to Formal Logic, 2nd ed. (free PDF and exercise answers at Logic Matters)", url: "https://www.logicmatters.net/ifl/", note: "Chapter numbers are for the 2nd edition; if yours differ, go by the topics."}
+        audio:
+          - {title: "Adamson, episodes 7–14 (Parmenides, Zeno, the atomists, the Sophists)", url: "https://historyofphilosophy.net", note: "Parmenides is the first real metaphysician; notice how much of the later tradition is a reaction to him."}
+        lessons:
+          - id: p0-w3-l1
+            kind: exercise
+            original_date: 2026-11-23
+            title: "Smith ch. 1–2: what deductive logic is; validity and soundness"
+            task: "Smith ch. 1–2. Exercises for ch. 2, on paper."
+            note_prompt: "A valid argument with a false conclusion: write one."
+            sources:
+              - {kind: free-online, title: "Smith, An Introduction to Formal Logic (PDF)", url: "https://www.logicmatters.net/ifl/", extract: {chapters: "1-2"}}
+          - id: p0-w3-l2
+            kind: exercise
+            original_date: 2026-11-24
+            title: "Smith ch. 3–4: forms of inference; what a proof is"
+            task: "Smith ch. 3–4. Exercises."
+            note_prompt: "Connect two of Weston's forms to Smith's treatment."
+            sources:
+              - {kind: free-online, title: "Smith, An Introduction to Formal Logic (PDF)", url: "https://www.logicmatters.net/ifl/", extract: {chapters: "3-4"}}
+          - id: p0-w3-l3
+            kind: exercise
+            original_date: 2026-11-25
+            title: "Smith ch. 5: the counterexample method"
+            task: "Smith ch. 5. Exercises. These matter most."
+            note_prompt: "Build a counterexample to \"affirming the consequent\" using a premise from the Cave."
+            sources:
+              - {kind: free-online, title: "Smith, An Introduction to Formal Logic (PDF)", url: "https://www.logicmatters.net/ifl/", extract: {chapters: "5"}}
+          - id: p0-w3-l4
+            kind: write
+            original_date: 2026-11-27
+            title: "Light write: validity and soundness for a friend"
+            requires: [p0-w3-l1, p0-w3-l3]
+            task: >
+              Half a page: explain validity and soundness to a friend who has never studied
+              logic, using the cogito as your example.
+            note_prompt: "Which of the two was harder to explain without jargon?"
+            sources: []
+          - id: p0-w3-s1
+            kind: seminar
+            original_date: 2026-11-29
+            title: "Seminar 3: the exercises you got wrong"
+            requires: [p0-w3-l3]
+            task: >
+              Different format: bring the three exercises you got wrong or doubted most, and work
+              through them with Claude. Then Claude gives you a short argument cold and you assess
+              it live, talking it through.
+            sources: []
+
+      # ── Week 4 ────────────────────────────────────────────────────────────
+      - id: p0-w4
+        title: "Week 4: propositional logic and the exit test"
+        goal: >
+          You can translate simple English arguments into propositional logic and test them for
+          validity with a truth table. The write is a preview of the Phase 0 exit test on Hume.
+        audio:
+          - {title: "Adamson, episodes 15–20 (Socrates and the beginnings of Plato)", url: "https://historyofphilosophy.net", note: "This is the lecture prep for Unit 1."}
+        lessons:
+          - id: p0-w4-l1
+            kind: exercise
+            original_date: 2026-11-30
+            title: "Smith ch. 6–8: propositions, connectives, a formal language"
+            task: >
+              Smith ch. 6–8: propositions and their forms; the connectives (and, or, not); the
+              idea of a formal language. Translate five English sentences of your own into the symbols.
+            note_prompt: "Which of your five sentences resisted translation, and why?"
+            sources:
+              - {kind: free-online, title: "Smith, An Introduction to Formal Logic (PDF)", url: "https://www.logicmatters.net/ifl/", extract: {chapters: "6-8"}}
+          - id: p0-w4-l2
+            kind: exercise
+            original_date: 2026-12-01
+            title: "Smith ch. 9–10: syntax, semantics, truth tables for the connectives"
+            task: "Smith ch. 9–10. Exercises."
+            note_prompt: "Where does ordinary English \"if\" differ from the arrow?"
+            sources:
+              - {kind: free-online, title: "Smith, An Introduction to Formal Logic (PDF)", url: "https://www.logicmatters.net/ifl/", extract: {chapters: "9-10"}}
+          - id: p0-w4-l3
+            kind: exercise
+            original_date: 2026-12-02
+            title: "Smith ch. 11–13: truth-table tests for validity"
+            task: "Smith ch. 11–13: truth-table tests for validity; tautologies and contradictions. Five exercises, full tables, on paper."
+            note_prompt: "Which exercise took longest, and what slowed it?"
+            sources:
+              - {kind: free-online, title: "Smith, An Introduction to Formal Logic (PDF)", url: "https://www.logicmatters.net/ifl/", extract: {chapters: "11-13"}}
+          - id: p0-w4-l4
+            kind: exercise
+            original_date: 2026-12-03
+            title: "Smith ch. 14–15: tautological entailment and equivalence"
+            task: "Smith ch. 14–15. Five exercises."
+            note_prompt: "Take the cogito or Cave reconstruction and write its form in symbols. Is it valid by truth table?"
+            sources:
+              - {kind: free-online, title: "Smith, An Introduction to Formal Logic (PDF)", url: "https://www.logicmatters.net/ifl/", extract: {chapters: "14-15"}}
+          - id: p0-w4-l5
+            kind: write
+            original_date: 2026-12-04
+            title: "Reconstruction 3: Hume's fork (exit-test preview)"
+            requires: [p0-w4-l3, p0-w4-l4]
+            task: >
+              Hume, Enquiry Concerning Human Understanding, Section IV Part I (about five pages).
+              Reconstruction 3 (400–600 words): the argument that all reasoning concerns either
+              relations of ideas or matters of fact, and that causal knowledge belongs to the
+              second. Number the premises; state the form; say whether it's valid, and whether
+              the premises are true.
+            note_prompt: "Valid? Sound? Which premise would Hume's opponent attack first?"
+            sources:
+              - {kind: free-online, title: "Hume, Enquiry (Early Modern Texts PDF)", url: "https://www.earlymoderntexts.com/assets/pdfs/hume1748.pdf", extract: {section: "Section 4, Part 1"}}
+          - id: p0-w4-s1
+            kind: seminar
+            original_date: 2026-12-06
+            title: "Seminar 4: Hume's fork"
+            requires: [p0-w4-l5]
+            task: >
+              Bring Reconstruction 3. Claude argues that the fork is itself neither a relation of
+              ideas nor a matter of fact, so it cuts its own branch. Defend or concede. Then the
+              Phase 0 exit check: Claude hands you a fresh Hume paragraph; number its premises,
+              state the conclusion, say whether the form is valid.
+            sources: []
+
+      # ── Weeks 5–6: to be drafted day by day with you, roughly two weeks before you reach them.
+      - id: p0-w5-6
+        title: "Weeks 5–6: the map"
+        status: undrafted
+        goal: "A one-page timeline in your own words: who answered whom, and about what."
+        read: "Anthony Kenny, A New History of Western Philosophy: the introductions and the chapter openings of all four parts, not the detail yet. Keep it as the companion for all of Phase 1."
+        listen: "Michael Sugrue's Great Minds of the Western Tradition lectures: Plato, Aristotle, Descartes, Kant (4 h total) — https://www.youtube.com/@dr.michaelsugrue"
+        write: "A one-page timeline: who answered whom, and about what."
+        exit_test: "Take a paragraph from Hume, number its premises, state its conclusion, say whether the form is valid. If not, spend two more weeks on logic."
+        lessons: []
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: phase-1
+    title: The Western spine
+    summary: >
+      Twenty-five units in chronological order, each three to four weeks. Every unit has a
+      primary text, a guide, a lecture, and a writing task. M = metaphysics track, S = social
+      theory track. Standing companions: Kenny's New History before each thinker, the Stanford
+      Encyclopedia of Philosophy entry afterwards, Adamson's podcast for Units 1–7. Pace check:
+      if a unit regularly spills past four weeks, cut the primary reading, never the writing.
+    units:
+      - {id: p1-u01, status: undrafted, title: "Socrates and method", tags: [], primary: "Plato, Euthyphro, Apology, Meno", guide: "Kenny ch. on Plato; SEP \"Plato\"", lecture: "Sugrue, Plato; Adamson eps. on Socrates", writing: "Reconstruct the Euthyphro dilemma", lessons: []}
+      - {id: p1-u02, status: undrafted, title: "Plato's Forms", tags: [M], primary: "Phaedo; Republic books V–VII", guide: "Julia Annas, Plato: A Very Short Introduction", lecture: "Adamson, Plato series", writing: "The argument from recollection; does the Third Man objection work?", lessons: []}
+      - {id: p1-u03, status: undrafted, title: "Plato on the city", tags: [S], primary: "Republic books I–IV, VIII–IX", guide: "Annas, Introduction to Plato's Republic (selections)", lecture: "Steven B. Smith, Yale Intro to Political Philosophy, lectures 1–6", writing: "Essay 1: Is Thrasymachus refuted?", lessons: []}
+      - {id: p1-u04, status: undrafted, title: "Aristotle's method and metaphysics", tags: [M], primary: "Categories 1–5; Physics II; Metaphysics I, IV, VII (selections)", guide: "Jonathan Barnes, Aristotle: A VSI; Christopher Shields, Aristotle (Routledge)", lecture: "Sugrue, Aristotle; Adamson Aristotle eps.", writing: "Reconstruct the four causes and the principle of non-contradiction defence", lessons: []}
+      - {id: p1-u05, status: undrafted, title: "Aristotle on the good life", tags: [S], primary: "Nicomachean Ethics I–III, X; Politics I, III", guide: "Shields, Aristotle ch. on ethics", lecture: "Smith, Yale lectures 7–9", writing: "The function argument, premise by premise", lessons: []}
+      - {id: p1-u06, status: undrafted, title: "Hellenistic schools", tags: [], primary: "Epictetus, Handbook; Epicurus, Letter to Menoeceus; Sextus Empiricus, Outlines I (selections)", guide: "Kenny; A. A. Long, Hellenistic Philosophy (selections)", lecture: "Adamson Hellenistic eps.", writing: "Compare Stoic and Epicurean views of what we control", lessons: []}
+      - {id: p1-u07a, status: undrafted, title: "Augustine, Anselm, universals", tags: [M], primary: "Augustine, Confessions XI (on time); Anselm, Proslogion 2–4 with Gaunilo's reply; Porphyry, Isagoge (opening); Abelard on universals via Kenny", guide: "Kenny vol. 2; SEP \"Ontological Arguments\", \"The Medieval Problem of Universals\"", lecture: "Adamson medieval episodes; Gregory Sadler on Anselm", writing: "Reconstruct the ontological argument; the realism/nominalism dispute in one page", lessons: []}
+      - {id: p1-u07b, status: undrafted, title: "Aquinas", tags: [M, S], primary: "De Ente et Essentia (whole); Summa Theologiae Ia Q2 (Five Ways), Q3, Q13, Q75–76, Q84–86; Ia-IIae Q90–97 (Treatise on Law)", guide: "Brian Davies, The Thought of Thomas Aquinas; Edward Feser, Aquinas: A Beginner's Guide; SEP \"Thomas Aquinas\"", lecture: "Adamson's Aquinas episodes; Thomistic Institute, Aquinas 101", writing: "Reconstruct the First Way and the essence/existence distinction; one page on natural law as the bridge from metaphysics to the social thread", lessons: []}
+      - {id: p1-u08, status: undrafted, title: "Descartes", tags: [M], primary: "Meditations (all), with Objections and Replies II and IV", guide: "Gary Hatfield, Descartes and the Meditations (Routledge)", lecture: "Sugrue, Descartes; Adamson (if released)", writing: "The cogito, the wax, the real-distinction argument", lessons: []}
+      - {id: p1-u09, status: undrafted, title: "Hobbes", tags: [S], primary: "Leviathan I–II (chs. 13–21 closely)", guide: "Richard Tuck, Hobbes: A VSI", lecture: "Smith, Yale lectures 12–14", writing: "Essay 2: Plato vs Hobbes on why we need a state", lessons: []}
+      - {id: p1-u10, status: undrafted, title: "Spinoza", tags: [M], primary: "Ethics Part I (all), Part II props 1–13", guide: "Steven Nadler, Spinoza's Ethics: An Introduction", lecture: "Nadler lectures (YouTube)", writing: "Substance monism: reconstruct the argument to IP14", lessons: []}
+      - {id: p1-u11, status: undrafted, title: "Locke", tags: [M, S], primary: "Essay II.xxvii (personal identity), II.viii (qualities); Second Treatise chs. 2–5, 8–9", guide: "E. J. Lowe, Locke on Human Understanding; Smith lectures 15–16", lecture: "Smith, Yale", writing: "Locke's memory theory and Reid's brave-officer objection; property in the Second Treatise", lessons: []}
+      - {id: p1-u12, status: undrafted, title: "Leibniz and Berkeley", tags: [M], primary: "Leibniz, Monadology, Discourse on Metaphysics; Berkeley, Three Dialogues", guide: "Kenny; SEP entries", lecture: "Adamson or Sugrue", writing: "Why Berkeley thinks matter is incoherent; Leibniz on identity of indiscernibles", lessons: []}
+      - {id: p1-u13, status: undrafted, title: "Hume", tags: [M], primary: "Enquiry Concerning Human Understanding (all); Treatise I.iv.6 (personal identity)", guide: "Peter Millican's Oxford Hume lectures (free podcast); Don Garrett, Hume (Routledge)", lecture: "Millican", writing: "Induction and causation: the fork, the argument, the sceptical solution", lessons: []}
+      - {id: p1-u14, status: undrafted, title: "Rousseau", tags: [S], primary: "Discourse on Inequality; Social Contract I–II", guide: "Robert Wokler, Rousseau: A VSI", lecture: "Smith, Yale lectures 17–19", writing: "Essay 3: Hobbes, Locke, Rousseau on the state of nature", lessons: [], note: "The social theory sampler (Phase 2, Track B) runs here, between Rousseau and Kant."}
+      - {id: p1-u15, status: undrafted, title: "Kant's project", tags: [M], primary: "Prolegomena (all); Critique of Pure Reason: Prefaces, Introduction, Transcendental Aesthetic, Analytic of Concepts (B Deduction), Antinomies", guide: "Sebastian Gardner, Kant and the Critique of Pure Reason (Routledge), read alongside", lecture: "Robert Paul Wolff's Kant lectures (YouTube, 9 × 1.5 h); Dan Robinson's Oxford Kant lectures", writing: "Reconstruct the Aesthetic's argument for the ideality of space; one page on how Kant answers Hume", lessons: []}
+      - {id: p1-u16, status: undrafted, title: "Kant's ethics and politics", tags: [S], primary: "Groundwork (all); What is Enlightenment?; Perpetual Peace", guide: "Sally Sedgwick, Kant's Groundwork: An Introduction", lecture: "Sugrue, Kant", writing: "The categorical imperative's three formulas and whether they're equivalent", lessons: []}
+      - {id: p1-u17, status: undrafted, title: "Hegel", tags: [M, S], primary: "Phenomenology of Spirit: Preface, Introduction, Lordship and Bondage; Philosophy of Right §§ 142–157, 257–260", guide: "Peter Singer, Hegel: A VSI; Stephen Houlgate, An Introduction to Hegel", lecture: "Rick Roderick on Hegel; Smith, Yale (Tocqueville lectures)", writing: "Master–slave as an argument about recognition; one page on what \"dialectic\" means", lessons: []}
+      - {id: p1-u18, status: undrafted, title: "Marx", tags: [S], primary: "Economic and Philosophic Manuscripts of 1844 (alienated labour); German Ideology Part I; Capital vol. 1 ch. 1; Manifesto", guide: "Jonathan Wolff, Why Read Marx Today?; Peter Singer, Marx: A VSI", lecture: "Wolff's Marx lectures (YouTube); David Harvey, Reading Capital ch. 1", writing: "Essay 4: Hegel's recognition vs Marx's alienation", lessons: []}
+      - {id: p1-u19, status: undrafted, title: "Mill and liberalism", tags: [S], primary: "On Liberty; Utilitarianism; The Subjection of Women ch. 1", guide: "Smith, Yale lectures 20–22", lecture: "Smith, Yale", writing: "The harm principle: state it precisely and find its hardest case", lessons: []}
+      - {id: p1-u20, status: undrafted, title: "Nietzsche", tags: [], primary: "On the Genealogy of Morality (all); Beyond Good and Evil Part I", guide: "Brian Leiter, Nietzsche on Morality (Routledge)", lecture: "Rick Roderick, Nietzsche and the Postmodern Condition (8 lectures)", writing: "What a genealogy is and what it does and doesn't prove", lessons: []}
+      - {id: p1-u21, status: undrafted, title: "The analytic turn", tags: [M], primary: "Frege, On Sense and Reference; Russell, On Denoting; Wittgenstein, Philosophical Investigations §§ 1–133, 243–315; Quine, On What There Is; Two Dogmas of Empiricism", guide: "Scott Soames, Philosophical Analysis in the Twentieth Century vol. 1 (selections); Marie McGinn, Wittgenstein and the Philosophical Investigations", lecture: "Kripke and Searle lectures on YouTube", writing: "Reconstruct Two Dogmas; the private language argument", lessons: []}
+      - {id: p1-u22, status: undrafted, title: "Phenomenology: Husserl and Heidegger", tags: [M], primary: "Husserl, Cartesian Meditations I–II; Heidegger, Being and Time Introduction, §§ 9–18, 25–27, 39–44", guide: "Hubert Dreyfus, Being-in-the-World chs. 1–6; Simon Critchley, Continental Philosophy: A VSI", lecture: "Dreyfus's Berkeley Being and Time lectures (archive.org)", writing: "Being-in-the-world against Descartes's subject: what exactly does Heidegger deny?", lessons: []}
+      - {id: p1-u23, status: undrafted, title: "Sartre", tags: [M, S], primary: "Existentialism is a Humanism; Being and Nothingness: Introduction, Part I ch. 2 (Bad Faith), Part III ch. 1 § IV (The Look), Part IV ch. 1 (Freedom); Nausea alongside", guide: "Sebastian Gardner, Sartre's Being and Nothingness: A Reader's Guide; Joseph Catalano, A Commentary on Being and Nothingness", lecture: "The Partially Examined Life Sartre episodes; Gregory Sadler's Sartre series", writing: "Reconstruct the bad-faith argument; Essay 5: What divides the analytic and continental traditions?", lessons: []}
+      - {id: p1-u24, status: undrafted, title: "Buddhist metaphysics", tags: [M], primary: "Nāgārjuna, Mūlamadhyamakakārikā chs. 1, 2, 15, 18, 24 (Garfield translation with commentary)", guide: "Jan Westerhoff, Nāgārjuna's Madhyamaka; SEP \"Nāgārjuna\"", lecture: "Adamson and Ganeri, History of Philosophy in India series", writing: "Emptiness against Aristotle's substance: reconstruct ch. 15 and say what, if anything, survives", lessons: []}
+      - {id: p1-u25, status: undrafted, title: "Confucian and Daoist social thought", tags: [S], primary: "Analects books 1–4, 12–13 (Slingerland); Mencius 2A6 and 6A; Zhuangzi Inner Chapters (Ziporyn)", guide: "Bryan Van Norden, Introduction to Classical Chinese Philosophy; SEP \"Confucius\", \"Zhuangzi\"", lecture: "Adamson's Classical Chinese Philosophy series; Michael Puett's Harvard lectures", writing: "Essay 6: Confucian ritual vs Hobbes's contract", lessons: []}
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: phase-2
+    title: Specialization
+    summary: >
+      Two tracks run in alternation, six to eight weeks on one, then switch. Each opens with a
+      textbook on-ramp, then the canonical papers. The Track B sampler runs early, in Phase 1
+      after Rousseau; its "then choose" essay waits until Phase 2 proper.
+    units:
+      - {id: p2-a-onramp, status: undrafted, track: metaphysics, title: "Metaphysics on-ramp (6 wks)", primary: "E. J. Lowe, A Survey of Metaphysics (all); Loux & Crisp, Metaphysics: A Contemporary Introduction", guide: "SEP: Metaphysics, Properties, Identity Over Time", writing: "A map of the problems: universals, particulars, modality, time, causation, persistence, composition", lessons: []}
+      - {id: p2-a-universals, status: undrafted, track: metaphysics, title: "Universals and properties (4 wks)", primary: "D. M. Armstrong, Universals: An Opinionated Introduction; David Lewis, New Work for a Theory of Universals", guide: "SEP: Nominalism in Metaphysics, Tropes", writing: "Reconstruct Armstrong's case against class nominalism", lessons: []}
+      - {id: p2-a-modality, status: undrafted, track: metaphysics, title: "Modality (6 wks)", primary: "Kripke, Naming and Necessity (all); Lewis, On the Plurality of Worlds chs. 1–2; Plantinga, The Nature of Necessity ch. 4", guide: "Kripke lectures on YouTube; SEP: Possible Worlds", writing: "Essay: Is Lewis's modal realism really the price of taking modality seriously?", lessons: []}
+      - {id: p2-a-time, status: undrafted, track: metaphysics, title: "Time and persistence (5 wks)", primary: "McTaggart, The Unreality of Time; Sider, Four-Dimensionalism chs. 1–4; Lewis, Survival and Identity; Parfit, Reasons and Persons Part III", guide: "SEP: Time, Temporal Parts, Personal Identity", writing: "Reconstruct McTaggart's paradox; endurance vs perdurance in your own case", lessons: []}
+      - {id: p2-a-composition, status: undrafted, track: metaphysics, title: "Composition and fundamentality (5 wks)", primary: "van Inwagen, Material Beings chs. 1–9 (selections); Schaffer, On What Grounds What; Fine, The Question of Realism", guide: "SEP: Material Constitution, Metaphysical Grounding", writing: "Essay: Does the special composition question have an answer?", lessons: []}
+      - {id: p2-a-meta, status: undrafted, track: metaphysics, title: "Metametaphysics (4 wks)", primary: "Carnap, Empiricism, Semantics, and Ontology; Quine, On What There Is (reread); Chalmers, Manley & Wasserman (eds.), Metametaphysics: Introduction + two chapters", guide: "SEP: Metaontology", writing: "Essay: Is metaphysics possible after Carnap? Tie it back to Kant", lessons: []}
+      - {id: p2-b-normative, status: undrafted, track: social-theory, title: "Sampler: normative (3 wks)", primary: "Rawls, A Theory of Justice §§ 1–4, 11–17, 24–26; Nozick, Anarchy, State, and Utopia ch. 7", lecture: "Michael Sandel's Harvard Justice course, lectures 1–8", question: "What would a just society look like, and why?", lessons: []}
+      - {id: p2-b-critical, status: undrafted, track: social-theory, title: "Sampler: critical / genealogical (3 wks)", primary: "Adorno & Horkheimer, Dialectic of Enlightenment (The Culture Industry); Foucault, Discipline and Punish Part III ch. 3 (Panopticism); Marx reread", lecture: "Rick Roderick, The Self Under Siege", question: "How does power work when nobody is holding a gun?", lessons: []}
+      - {id: p2-b-sociological, status: undrafted, track: social-theory, title: "Sampler: sociological (4 wks)", primary: "Weber, The Protestant Ethic (all) and Politics as a Vocation; Durkheim, Suicide Book II ch. 5 and Rules of Sociological Method ch. 1; Bourdieu, Distinction Introduction", guide: "Anthony Giddens, Capitalism and Modern Social Theory", question: "What actually holds a society together, and how would we know?", lessons: []}
+      - {id: p2-b-choose, status: undrafted, track: social-theory, title: "Then choose", writing: "1,500-word essay on which strand asks the question you most want answered and why. Directions: Normative (Rawls in full, Habermas, Cohen, Anderson, Mills); Critical (Lukács, Gramsci, Benjamin, Foucault, Butler, Fraser & Honneth); Sociological (Weber, Durkheim, Bourdieu, Giddens, Luhmann).", lessons: []}
+      - {id: p2-b-zizek, status: undrafted, track: social-theory, title: "Žižek sequence (6 wks)", primary: "Althusser, Ideology and Ideological State Apparatuses; Bruce Fink, The Lacanian Subject chs. 1–5; Žižek, How to Read Lacan; Žižek, The Sublime Object of Ideology chs. 1 and 3", lecture: "Why Theory podcast (Lacan and Žižek episodes); The Pervert's Guide to Ideology", writing: "Reconstruct Žižek's claim that ideology is not false belief but what we do despite knowing better; test it against Marx's commodity fetishism", lessons: []}
+      - {id: p2-meet, status: undrafted, track: both, title: "Where the tracks meet: social ontology", primary: "Searle, The Construction of Social Reality; Margaret Gilbert; Sally Haslanger, Resisting Reality", note: "Read when both tracks are a year in.", lessons: []}
+
+resources:
+  - {kind: reference, title: "Stanford Encyclopedia of Philosophy", url: "https://plato.stanford.edu", use: "The after-reading check on every unit"}
+  - {kind: reference, title: "Internet Encyclopedia of Philosophy", url: "https://iep.utm.edu", use: "Gentler entries when SEP is too dense"}
+  - {kind: survey, title: "Anthony Kenny, A New History of Western Philosophy", use: "Companion for all of Phase 1"}
+  - {kind: primary, title: "Early Modern Texts (Bennett's modernized Descartes–Kant)", url: "https://www.earlymoderntexts.com", use: "Free editions, especially Locke, Hume, Kant"}
+  - {kind: primary, title: "Project Gutenberg", url: "https://www.gutenberg.org", use: "Free editions"}
+  - {kind: primary, title: "Marxists Internet Archive", url: "https://www.marxists.org", use: "Free editions for Unit 18"}
+  - {kind: lectures, title: "Michael Sugrue (YouTube)", url: "https://www.youtube.com/@dr.michaelsugrue"}
+  - {kind: lectures, title: "Steven B. Smith, Introduction to Political Philosophy (Yale Open Courses)", url: "https://oyc.yale.edu/political-science/plsc-114"}
+  - {kind: lectures, title: "Hubert Dreyfus on Being and Time (archive.org)", url: "https://archive.org"}
+  - {kind: lectures, title: "Michael Sandel, Justice (Harvard)", url: "https://justiceharvard.org"}
+  - {kind: podcast, title: "Peter Adamson, History of Philosophy Without Any Gaps", url: "https://historyofphilosophy.net"}
+  - {kind: podcast, title: "Philosophize This!", url: "https://www.philosophizethis.org/podcasts"}
+  - {kind: podcast, title: "The Partially Examined Life", url: "https://partiallyexaminedlife.com"}
+  - {kind: papers, title: "PhilPapers", url: "https://philpapers.org", use: "Finding the Phase 2 papers"}
+  - {kind: logic, title: "Peter Smith, Logic Matters (IFL and Teach Yourself Logic)", url: "https://www.logicmatters.net"}
+  - {kind: writing, title: "Jim Pryor's guides and glossary", url: "http://www.jimpryor.net/teaching/"}
+  - {kind: community, title: "r/askphilosophy (panelist answers only)", url: "https://www.reddit.com/r/askphilosophy/"}
+
+milestones:
+  - {when: "End of Phase 0", milestone: "Can read an argument", test: "Take any paragraph from Hume, number its premises, say whether the inference is valid."}
+  - {when: "After Unit 7", milestone: "Ancient and medieval base", test: "Explain, without notes, how Aristotle's substances answer Plato's Forms, and why Aquinas needed both."}
+  - {when: "After Unit 14", milestone: "Early modern base", test: "State the rationalist/empiricist dispute as a disagreement about a specific question; explain what Hobbes, Locke and Rousseau each think legitimacy requires."}
+  - {when: "After Unit 16", milestone: "Kant", test: "Explain in two pages how the first Critique answers Hume, and what it gives up to do so."}
+  - {when: "End of Phase 1", milestone: "Intermediate", test: "Read a new philosophy paper, identify its tradition and problem, reconstruct its main argument in an hour."}
+  - {when: "One year into Phase 2", milestone: "Advanced amateur", test: "Read a current journal article, find the weak premise, know who has already attacked it."}
+  - {when: "Ongoing", milestone: "The real test", test: "You change your mind about something you believed, because of an argument, roughly once a year."}

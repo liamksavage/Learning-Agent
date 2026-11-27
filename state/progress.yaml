@@ -1,0 +1,12 @@
+# Progress state. Written by tools/la.py; safe to edit by hand.
+# Lesson statuses: done | skipped | pending (served, no reply yet)
+# Lessons absent from the map are not yet reached.
+philosophy:
+  lessons:
+    p0-w1-l1: {status: done, date: 2026-11-08}
+    p0-w1-l2: {status: skipped, date: 2026-11-09, reason: "Missed; folded into p0-w1-l5."}
+    p0-w1-l3: {status: skipped, date: 2026-11-10, reason: "Skipped; not needed for the Cave."}
+    p0-w1-l4: {status: done, date: 2026-11-11}
+  served: []          # [{date, lesson}] one entry per morning run
+  feedback: []        # one row per unit: {unit, worked, dragged, hour, change}
+  seminars: []        # [{date, lesson, summary_file}]
