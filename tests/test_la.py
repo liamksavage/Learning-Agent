@@ -26,7 +26,7 @@ FIXTURE = {
                     {"id": "u1-l1", "kind": "read", "title": "Read A", "task": "t", "sources": [
                         {"kind": "free-online", "title": "A", "url": "https://example.org/a", "extract": "all"}]},
                     {"id": "u1-l2", "kind": "read", "title": "Read B", "task": "t", "sources": [
-                        {"kind": "owned-book", "title": "B", "locator": "ch. 2"}]},
+                        {"kind": "book", "title": "B", "locator": "ch. 2"}]},
                     {"id": "u1-l3", "kind": "write", "title": "Write 1", "task": "t", "requires": ["u1-l1", "u1-l2"], "sources": []},
                     {"id": "u1-s1", "kind": "seminar", "title": "Seminar 1", "task": "t", "requires": ["u1-l3"], "sources": []},
                 ],
@@ -145,7 +145,8 @@ def test_render_contains_lesson_and_theme_tokens(repo):
     assert "<title>Today's Lesson</title>" in html
     assert "Read B" in html
     assert "my note" in html
-    assert "Your copy" in html  # owned book rendered as such
+    assert ">Book<" in html  # a book to get, rendered as such
+    assert "Re-enter" in html and "Note" in html
     assert "prefers-color-scheme: dark" in html and '[data-theme="dark"]' in html
 
 
@@ -183,5 +184,5 @@ def test_real_curriculum_validates():
 def test_real_curriculum_next_lesson_is_after_recorded_progress():
     repo = la.Repo(REPO_ROOT)
     p = la.today(repo, dt.date(2026, 11, 30))["topics"][0]  # a Monday
-    # Sun 8 and Wed 11 done, Mon 9 and Tue 10 skipped → next is Thu 12's lesson.
-    assert p["lesson"]["id"] == "p0-w1-l5"
+    # Sun 8 and Wed 11 done; the two missed Weston days are not skipped, so Mon 9 is next.
+    assert p["lesson"]["id"] == "p0-w1-l2"

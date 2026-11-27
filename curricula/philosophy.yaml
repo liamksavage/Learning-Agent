@@ -4,7 +4,7 @@
 # doc first planned a lesson for; the agent ignores it when choosing what to serve.
 #
 # Lesson kinds: read | listen | exercise | write | seminar
-# Source kinds: free-online | owned-book | paid-online | audio | video
+# Source kinds: free-online | book (to buy or borrow) | paid-online | audio | video
 # Statuses live in state/progress.yaml, never here.
 
 topic: philosophy
@@ -48,8 +48,8 @@ phases:
           - {kind: free-online, title: "Pryor, Guidelines on Reading Philosophy", url: "http://www.jimpryor.net/teaching/guidelines/reading.html"}
           - {kind: free-online, title: "Pryor, Guidelines on Writing a Philosophy Paper", url: "http://www.jimpryor.net/teaching/guidelines/writing.html"}
           - {kind: free-online, title: "Pryor, Philosophical Terms and Methods (glossary)", url: "http://www.jimpryor.net/teaching/vocab/index.html"}
-          - {kind: owned-book, title: "Anthony Weston, A Rulebook for Arguments (any edition; chapter titles given, numbering shifts)"}
-          - {kind: owned-book, title: "Plato, Republic, Grube/Reeve (Hackett)"}
+          - {kind: book, title: "Anthony Weston, A Rulebook for Arguments (any edition; chapter titles given, numbering shifts)", note: "Cheap paperback, ~$10 used. Not legitimately free online. Until you have it, the Van Cleave chapters on each Weston day are the stand-in."}
+          - {kind: book, title: "Plato, Republic, Grube/Reeve (Hackett)", note: "Optional. The free Jowett links cover everything Phase 0 needs."}
           - {kind: free-online, title: "Plato, Republic, Jowett translation (Project Gutenberg)", url: "https://www.gutenberg.org/ebooks/1497"}
         audio:
           - {title: "Philosophize This! episodes 1–5 (the pre-Socratics through Socrates)", url: "https://www.philosophizethis.org/podcasts", note: "Light; sets up Unit 1 without effort."}
@@ -76,7 +76,8 @@ phases:
               (news, a work email, a tweet) and write it as numbered premises and a conclusion.
             note_prompt: "Was anything left unstated?"
             sources:
-              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "Introduction; chapter 'Short Arguments'"}
+              - {kind: book, title: "Weston, A Rulebook for Arguments", locator: "Introduction; chapter 'Short Arguments'"}
+              - {kind: free-online, title: "Van Cleave, Introduction to Logic and Critical Thinking (open textbook)", url: "https://open.umn.edu/opentextbooks/textbooks/457", extract: {chapter: "1"}, verified: false, note: "Stand-in if you don't have Weston: ch. 1 (reconstructing and analyzing arguments). Link unverified until the stage 2 availability check runs."}
           - id: p0-w1-l3
             kind: read
             original_date: 2026-11-10
@@ -84,7 +85,8 @@ phases:
             task: "Weston, \"Generalizations\" and \"Arguments by Analogy.\""
             note_prompt: "Write one bad generalization you've believed and say which rule it breaks."
             sources:
-              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "chapters 'Generalizations' and 'Arguments by Analogy'"}
+              - {kind: book, title: "Weston, A Rulebook for Arguments", locator: "chapters 'Generalizations' and 'Arguments by Analogy'"}
+              - {kind: free-online, title: "Van Cleave, Introduction to Logic and Critical Thinking (open textbook)", url: "https://open.umn.edu/opentextbooks/textbooks/457", extract: {chapter: "3"}, verified: false, note: "Stand-in if you don't have Weston: ch. 3 (inductive arguments: generalizations and analogies). Link unverified until the stage 2 availability check runs."}
           - id: p0-w1-l4
             kind: read
             original_date: 2026-11-11
@@ -95,20 +97,19 @@ phases:
             note_prompt: "List every candidate for what the Cave is an argument FOR. There are at least three."
             sources:
               - {kind: free-online, title: "Republic Book 7, modernized Jowett with Stephanus numbers", url: "https://pressbooks.ulib.csuohio.edu/republic/?p=37", extract: {stephanus: "514a-517a"}}
-              - {kind: owned-book, title: "Republic, Grube/Reeve (Hackett)", locator: "Book VII, 514a–517a"}
+              - {kind: book, title: "Republic, Grube/Reeve (Hackett), if you have it", locator: "Book VII, 514a–517a"}
           - id: p0-w1-l5
             kind: read
             original_date: 2026-11-12
-            title: "Weston on short arguments, then Republic 517b–521b"
+            title: "Plato, Republic 517b–521b: Socrates explains the Cave"
             task: >
-              Weston, Introduction and "Short Arguments" for the first 20 minutes (folded in
-              from the missed day), then Republic 517b–521b, where Socrates explains the image
-              and why the philosopher must go back down. Apply Weston's rules as you read.
+              Republic 517b–521b, where Socrates explains the image and why the philosopher must
+              go back down. Apply Weston's rules as you read: mark each premise and each
+              inference.
             note_prompt: "Pick the one thesis the passage argues for most directly."
             sources:
-              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "Introduction; 'Short Arguments'"}
               - {kind: free-online, title: "Republic Book 7, modernized Jowett", url: "https://pressbooks.ulib.csuohio.edu/republic/?p=37", extract: {stephanus: "517b-521b"}}
-              - {kind: owned-book, title: "Republic, Grube/Reeve (Hackett)", locator: "Book VII, 517b–521b"}
+              - {kind: book, title: "Republic, Grube/Reeve (Hackett), if you have it", locator: "Book VII, 517b–521b"}
           - id: p0-w1-l6
             kind: write
             original_date: 2026-11-13
@@ -151,7 +152,8 @@ phases:
               absurdum). Write one example of each form yourself, in plain English.
             note_prompt: "Which form was the Cave reconstruction using, if any?"
             sources:
-              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "chapters 'Arguments about Causes' and 'Deductive Arguments'"}
+              - {kind: book, title: "Weston, A Rulebook for Arguments", locator: "chapters 'Arguments about Causes' and 'Deductive Arguments'"}
+              - {kind: free-online, title: "Van Cleave, Introduction to Logic and Critical Thinking (open textbook)", url: "https://open.umn.edu/opentextbooks/textbooks/457", extract: {chapter: "2"}, verified: false, note: "Stand-in if you don't have Weston: ch. 2 (formal methods: the valid deductive forms). Link unverified until the stage 2 availability check runs."}
           - id: p0-w2-l2
             kind: read
             original_date: 2026-11-17
@@ -162,7 +164,8 @@ phases:
               Save as v2.
             note_prompt: "Which of the two seminar notes changed the argument, and which only the wording?"
             sources:
-              - {kind: owned-book, title: "Weston, A Rulebook for Arguments", locator: "chapter 'Extended Arguments'; appendix on fallacies"}
+              - {kind: book, title: "Weston, A Rulebook for Arguments", locator: "chapter 'Extended Arguments'; appendix on fallacies"}
+              - {kind: free-online, title: "Van Cleave, Introduction to Logic and Critical Thinking (open textbook)", url: "https://open.umn.edu/opentextbooks/textbooks/457", extract: {chapter: "4"}, verified: false, note: "Stand-in if you don't have Weston: ch. 4 (informal fallacies). Link unverified until the stage 2 availability check runs."}
           - id: p0-w2-l3
             kind: read
             original_date: 2026-11-18

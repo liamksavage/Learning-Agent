@@ -398,7 +398,7 @@ def validate(repo: Repo) -> list[str]:
                 elif ids.index(r) > ids.index(l["id"]):
                     problems.append(f"{topic}: {l['id']} requires {r}, which comes later in the plan")
             for s in l.get("sources", []) or []:
-                if s.get("kind") not in {"free-online", "owned-book", "paid-online", "audio", "video"}:
+                if s.get("kind") not in {"free-online", "book", "paid-online", "audio", "video"}:
                     problems.append(f"{topic}: {l['id']} source has unknown kind {s.get('kind')!r}")
                 if s.get("kind") in {"free-online", "paid-online", "audio", "video"} and not s.get("url"):
                     problems.append(f"{topic}: {l['id']} source {s.get('title')!r} needs a url")
@@ -417,211 +417,257 @@ def _e(s) -> str:
     return html.escape(str(s if s is not None else ""), quote=True)
 
 
-def _para(text: str | None) -> str:
+def _para(text: str | None, cls: str = "") -> str:
     if not text:
         return ""
-    return "".join(f"<p>{_e(p.strip())}</p>" for p in str(text).strip().split("\n\n") if p.strip())
+    c = f" class='{cls}'" if cls else ""
+    return "".join(f"<p{c}>{_e(p.strip())}</p>" for p in str(text).strip().split("\n\n") if p.strip())
 
 
 KIND_LABEL = {"read": "Read", "listen": "Listen", "exercise": "Exercises", "write": "Write", "seminar": "Seminar"}
+STATUS_GLYPH = {"done": "✓", "skipped": "–", "pending": "·", "upcoming": "", "today": "●"}
 
 
 def _source_html(s: dict) -> str:
     kind = s.get("kind")
     title = _e(s.get("title"))
-    if kind == "owned-book":
-        loc = f" <span class='loc'>{_e(s.get('locator'))}</span>" if s.get("locator") else ""
-        return f"<li class='src book'><span class='tag'>Your copy</span> {title}{loc}</li>"
+    note = f"<div class='src-note'>{_e(s.get('note'))}</div>" if s.get("note") else ""
+    if kind == "book":
+        loc = f"<div class='src-loc'>{_e(s.get('locator'))}</div>" if s.get("locator") else ""
+        return f"<li class='src'><span class='tag book'>Book</span><div class='src-body'><div>{title}</div>{loc}{note}</div></li>"
     tag = {"free-online": "Online", "paid-online": "Paid", "audio": "Audio", "video": "Video"}.get(kind, "Link")
+    if s.get("verified") is False:
+        tag += " · unverified"
     link = f"<a href='{_e(s.get('url'))}' target='_blank' rel='noopener'>{title}</a>" if s.get("url") else title
     extract = s.get("extract")
-    ex = ""
+    loc = ""
     if isinstance(extract, dict):
-        ex = " <span class='loc'>" + _e(", ".join(f"{k.capitalize()} {v}" for k, v in extract.items())) + "</span>"
-    return f"<li class='src'><span class='tag'>{tag}</span> {link}{ex}</li>"
+        loc = "<div class='src-loc'>" + _e(", ".join(f"{k.capitalize()} {v}" for k, v in extract.items())) + "</div>"
+    return f"<li class='src'><span class='tag'>{tag}</span><div class='src-body'><div>{link}</div>{loc}{note}</li>"
+
+
+def _step(n: int, title: str, mins, body: str, cls: str = "") -> str:
+    mins_html = f"<span class='mins'>{mins} min</span>" if mins else ""
+    return (
+        f"<li class='step {cls}'><div class='step-rail'><span class='step-n'>{n}</span></div>"
+        f"<div class='step-body'><h3>{_e(title)}{mins_html}</h3>{body}</div></li>"
+    )
+
+
+def _work_steps(plan: dict, L: dict) -> str:
+    hour = plan.get("hour", {})
+    kind = L.get("kind")
+    yn = plan.get("yesterday_note")
+
+    # 1. Re-enter
+    if yn:
+        text = yn["text"].split("\n\n", 2)[-1] if yn["text"].startswith("#") else yn["text"]
+        body1 = f"<p class='lead-in'>Your note from {_e(yn['date'])}:</p>" + _para(text, "read")
+    else:
+        body1 = "<p class='read'>No note on file yet. Reread the last paragraph you read, then begin.</p>"
+
+    # 2. Work
+    body2 = _para(L.get("task"), "read")
+    if kind in {"write", "seminar"} and not L.get("requires_met", True):
+        body2 += ("<p class='warn-inline'>The reading this depends on isn't recorded as done: "
+                  + _e(", ".join(L.get("unmet_requires", []))) + ". Do what you can and say so in your reply.</p>")
+    srcs = L.get("sources") or []
+    if srcs:
+        body2 += "<h4>Material</h4><ul class='sources'>" + "".join(_source_html(s) for s in srcs) + "</ul>"
+    if L.get("excerpt"):
+        body2 += f"<div class='excerpt'>{L['excerpt']}</div>"
+
+    # 3. Note
+    prompt = L.get("note_prompt")
+    body3 = (f"<p class='read prompt'>{_e(prompt)}</p>" if prompt else "<p class='read'>Three to five sentences: what was claimed, what supported it, what you don't yet buy.</p>")
+    body3 += "<p class='muted small'>Reply with it in the Claude session that sent this; that marks the day done.</p>"
+
+    label2 = {"write": "Write", "exercise": "Exercises", "listen": "Listen"}.get(kind, "Read")
+    return (
+        "<ol class='hour'>"
+        + _step(1, "Re-enter", hour.get("reenter_min", 10), body1)
+        + _step(2, label2, hour.get("work_min", 40), body2, "main")
+        + _step(3, "Note", hour.get("write_min", 10), body3)
+        + "</ol>"
+    )
+
+
+def _seminar_steps(plan: dict, L: dict) -> str:
+    reqs = L.get("requires") or []
+    bring = ("<p class='read'>Bring " + _e(", ".join(reqs)) + ". Open the Claude session when you have 45–60 minutes.</p>") if reqs else "<p class='read'>Open the Claude session when you have 45–60 minutes.</p>"
+    if not L.get("requires_met", True):
+        bring += "<p class='warn-inline'>The reconstruction isn't recorded as done. We'll run the seminar on your notes instead.</p>"
+    body2 = _para(L.get("task"), "read")
+    body3 = "<p class='read'>Two things to change, agreed together, saved to the repo. Then the week's feedback row.</p>"
+    return (
+        "<ol class='hour'>"
+        + _step(1, "Bring", None, bring)
+        + _step(2, "Seminar", "45–60", body2, "main")
+        + _step(3, "Afterwards", None, body3)
+        + "</ol>"
+    )
 
 
 def render_topic(plan: dict, date: dt.date) -> str:
     mode = plan["mode"]
-    parts = [f"<section class='topic'><h2 class='topic-title'>{_e(plan['title'])}</h2>"]
+    parts = ["<section class='topic'>"]
 
     if mode == "rest":
-        parts.append("<div class='card rest'><p class='big'>Rest day.</p><p>No reading. The plan picks up tomorrow.</p></div></section>")
+        parts.append(f"<p class='eyebrow'>{_e(plan['title'])}</p><h1 class='lesson-title'>Rest day</h1><p class='read'>No reading. The plan picks up tomorrow.</p></section>")
         return "".join(parts)
 
     if plan.get("exhausted"):
         nxt = plan.get("next_undrafted_unit") or {}
         parts.append(
-            "<div class='card warn'><p class='big'>The detailed plan has run out.</p>"
-            f"<p>Next up is <strong>{_e(nxt.get('title'))}</strong>, which hasn't been drafted day by day yet. "
-            "Reply in the session and we'll draft it together.</p></div></section>"
+            f"<p class='eyebrow'>{_e(plan['title'])}</p><h1 class='lesson-title'>The detailed plan has run out</h1>"
+            f"<p class='read'>Next up is <strong>{_e(nxt.get('title'))}</strong>, which hasn't been drafted day by day yet. "
+            "Reply in the session and we'll draft it together.</p></section>"
         )
         return "".join(parts)
 
-    L = plan["lesson"]
-    U = plan["unit"]
+    L, U = plan["lesson"], plan["unit"]
     pos = L.get("position", {})
     kind = L.get("kind")
-    hour = plan.get("hour", {})
 
-    # Header line
     parts.append(
-        f"<p class='eyebrow'>{_e(U['title'])} · {KIND_LABEL.get(kind, kind)} · lesson {pos.get('index')} of {pos.get('of')}</p>"
+        f"<p class='eyebrow'>{_e(plan['title'])} <span class='sep'>·</span> {_e(U['title'])} <span class='sep'>·</span> lesson {pos.get('index')} of {pos.get('of')}</p>"
         f"<h1 class='lesson-title'>{_e(L.get('title'))}</h1>"
     )
 
-    # Unsettled yesterday
     ls = plan.get("last_served")
     if ls and not ls.get("settled"):
         parts.append(
-            "<div class='card nudge'><p><strong>Yesterday isn't recorded.</strong> "
+            "<div class='nudge'><strong>Last time isn't recorded.</strong> "
             f"You were given <em>{_e(ls['lesson'])}</em> on {_e(ls['date'])} and I have no reply. "
-            "If you did it, reply <code>done</code> (and your note) in the session and I'll mark it. "
-            "Otherwise today's lesson stands.</p></div>"
+            "If you did it, reply <code>done</code> with your note and I'll mark it. Otherwise today's lesson stands.</div>"
         )
 
-    # Hour
-    if hour and kind != "seminar":
-        r, w, n = hour.get("reenter_min", 10), hour.get("work_min", 40), hour.get("write_min", 10)
-        tot = r + w + n
-        parts.append(
-            "<div class='hour' aria-label='The hour'>"
-            f"<span style='flex:{r}' title='Re-enter'>{r}′ re-enter</span>"
-            f"<span style='flex:{w}' title='Work'>{w}′ {('write' if kind == 'write' else 'work')}</span>"
-            f"<span style='flex:{n}' title='Note'>{n}′ note</span>"
-            f"</div><p class='muted small'>{tot} minutes. Reread yesterday's note first; the lesson is the middle block; the note closes it.</p>"
-        )
+    parts.append(_seminar_steps(plan, L) if kind == "seminar" else _work_steps(plan, L))
 
-    # Task
-    parts.append(f"<div class='card task'><h3>Today</h3>{_para(L.get('task'))}")
-    if kind in {"write", "seminar"} and not L.get("requires_met", True):
-        parts.append(
-            "<p class='warn-inline'>Some of the reading this depends on isn't recorded as done: "
-            + _e(", ".join(L.get("unmet_requires", []))) + ". Do what you can and say so in your reply.</p>"
-        )
-    srcs = L.get("sources") or []
-    if srcs:
-        parts.append("<h4>Material</h4><ul class='sources'>" + "".join(_source_html(s) for s in srcs) + "</ul>")
-    if L.get("excerpt"):
-        parts.append(f"<div class='excerpt'>{L['excerpt']}</div>")  # stage 2 fills this with cut pages
-    if L.get("note_prompt"):
-        parts.append(f"<h4>Your note tonight</h4><p class='prompt'>{_e(L['note_prompt'])}</p>")
-    parts.append("</div>")
-
-    # Yesterday's note
-    yn = plan.get("yesterday_note")
-    if yn:
-        text = yn["text"].split("\n\n", 2)[-1] if yn["text"].startswith("#") else yn["text"]
-        parts.append(f"<div class='card note'><h3>Re-enter: your note from {_e(yn['date'])}</h3>{_para(text)}</div>")
-    elif kind != "seminar":
-        parts.append("<div class='card note muted'><h3>Re-enter</h3><p>No note on file yet. Reread the last paragraph you read instead.</p></div>")
-
-    # Unit goal + week list
-    parts.append(f"<div class='card week'><h3>{_e(U['title'])}</h3>")
+    # Where you are
+    parts.append(f"<section class='block'><h2>Where you are</h2><p class='unit-title'>{_e(U['title'])}</p>")
     if U.get("goal"):
         parts.append(f"<p class='goal'>{_e(U['goal'])}</p>")
     parts.append("<ol class='lessons'>")
     for row in U.get("lessons", []):
-        cls = row["status"]
-        if row["id"] == L["id"]:
-            cls += " current"
+        st = "today" if row["id"] == L["id"] else row["status"]
         parts.append(
-            f"<li class='{cls}'><span class='dot' aria-hidden='true'></span>"
-            f"<span class='k'>{KIND_LABEL.get(row['kind'], row['kind'])}</span> {_e(row['title'])}"
-            f"<span class='st'>{_e(row['status'] if row['id'] != L['id'] else 'today')}</span></li>"
+            f"<li class='{st}'><span class='glyph' aria-hidden='true'>{STATUS_GLYPH.get(st, '')}</span>"
+            f"<div><div class='l-title'>{_e(row['title'])}</div>"
+            f"<div class='l-meta'>{KIND_LABEL.get(row['kind'], row['kind'])} · {_e(st)}</div></div></li>"
         )
     parts.append("</ol>")
     if U.get("have_ready"):
-        parts.append("<h4>Have ready this unit</h4><ul class='sources'>" + "".join(_source_html(s) for s in U["have_ready"]) + "</ul>")
-    parts.append("</div>")
+        parts.append("<details class='have-ready'><summary>Everything this unit uses</summary><ul class='sources'>"
+                     + "".join(_source_html(s) for s in U["have_ready"]) + "</ul></details>")
+    parts.append("</section>")
 
-    # Audio
     if U.get("audio"):
-        parts.append("<div class='card audio'><h3>Audio, outside the hour</h3><ul class='sources'>")
+        parts.append("<section class='block'><h2>Audio, outside the hour</h2><ul class='sources'>")
         for a in U["audio"]:
             link = f"<a href='{_e(a.get('url'))}' target='_blank' rel='noopener'>{_e(a.get('title'))}</a>" if a.get("url") else _e(a.get("title"))
-            note = f" <span class='loc'>{_e(a.get('note'))}</span>" if a.get("note") else ""
-            parts.append(f"<li class='src'><span class='tag'>Listen</span> {link}{note}</li>")
-        parts.append("</ul></div>")
+            note = f"<div class='src-note'>{_e(a.get('note'))}</div>" if a.get("note") else ""
+            parts.append(f"<li class='src'><span class='tag'>Listen</span><div class='src-body'><div>{link}</div>{note}</div></li>")
+        parts.append("</ul></section>")
 
     if plan.get("draft_ahead") and plan.get("next_undrafted_unit"):
         nxt = plan["next_undrafted_unit"]
-        parts.append(
-            f"<p class='muted small'>About {plan['remaining_work_lessons']} lessons of detailed plan remain. "
-            f"Next to draft: {_e(nxt.get('title'))}. I'll raise it on Sunday.</p>"
-        )
+        parts.append(f"<p class='muted small'>About {plan['remaining_work_lessons']} lessons of detailed plan remain. Next to draft: {_e(nxt.get('title'))}. I'll raise it on Sunday.</p>")
     parts.append("</section>")
     return "".join(parts)
 
 
 CSS = """
-/* Layout: one column of cards, reading-first; the lesson is the hero, the week is the map. */
+/* Layout: one calm column. The hour is the page: three numbered steps down a rail,
+   the work step dominant. The week map and unit material sit below, quieter. */
 :root{
-  --bg:#f4f5f1; --surface:#ffffff; --fg:#1d2420; --muted:#5c6660; --line:#dfe3dc;
-  --accent:#2d5f4e; --accent-ink:#ffffff; --soft:#e7efe9; --warn:#8a5a14; --warn-bg:#fbf1dd;
-  --done:#2d5f4e; --skipped:#9aa39d; --pending:#b7791f;
+  --bg:#f6f6f2; --fg:#1c231f; --muted:#6a746e; --line:#e1e4de; --rail:#d2d8d1;
+  --accent:#2d5f4e; --accent-ink:#ffffff; --soft:#e4ede7; --warn:#7a4f0e; --warn-bg:#f8efdc;
+  --done:#2d5f4e; --skipped:#a3aba5;
   --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
   --font-read:'Literata',Georgia,'Times New Roman',serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141917; --surface:#1d2320; --fg:#e8ebe6; --muted:#9aa69f; --line:#2c3531;
-  --accent:#7fc3a6; --accent-ink:#0f1a15; --soft:#22312a; --warn:#e3b56a; --warn-bg:#2d2616;
-  --done:#7fc3a6; --skipped:#6b756f; --pending:#d9a441; color-scheme:dark}}
+  --bg:#131816; --fg:#e9ece7; --muted:#9ba69f; --line:#283029; --rail:#303a33;
+  --accent:#86c9ac; --accent-ink:#0f1a15; --soft:#1f2b25; --warn:#e6bb73; --warn-bg:#2a2416;
+  --done:#86c9ac; --skipped:#5f6963; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#141917; --surface:#1d2320; --fg:#e8ebe6; --muted:#9aa69f; --line:#2c3531;
-  --accent:#7fc3a6; --accent-ink:#0f1a15; --soft:#22312a; --warn:#e3b56a; --warn-bg:#2d2616;
-  --done:#7fc3a6; --skipped:#6b756f; --pending:#d9a441; color-scheme:dark}
-body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);line-height:1.5;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.25rem 3rem}
-.wrap{max-width:40rem;margin:0 auto;display:flex;flex-direction:column;gap:1.25rem}
-header.top{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:.75rem}
-header.top .date{font-weight:600;letter-spacing:.01em}
-header.top .brand{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
-.topic{display:flex;flex-direction:column;gap:1rem}
-.topic-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0;font-weight:600}
-.eyebrow{margin:0;color:var(--accent);font-weight:600;font-size:.9rem}
-.lesson-title{font-family:var(--font-read);font-weight:600;font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.15;margin:0;text-wrap:balance}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem;min-width:0}
-.card h3{margin:0 0 .5rem;font-size:1rem;font-weight:600}
-.card h4{margin:1rem 0 .35rem;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
-.card.task{border-color:var(--accent)}
-.card.task p{font-family:var(--font-read);font-size:1.08rem;line-height:1.55;margin:.4rem 0}
-.card.note p{font-family:var(--font-read);font-size:1.02rem;margin:.4rem 0}
-.card.nudge{background:var(--warn-bg);border-color:transparent;color:var(--fg)}
-.card.warn{background:var(--warn-bg);border-color:transparent}
-.card.rest .big,.card.warn .big{font-family:var(--font-read);font-size:1.4rem;margin:0 0 .3rem}
-.warn-inline{color:var(--warn);font-size:.95rem !important;font-family:var(--font-ui) !important}
+  --bg:#131816; --fg:#e9ece7; --muted:#9ba69f; --line:#283029; --rail:#303a33;
+  --accent:#86c9ac; --accent-ink:#0f1a15; --soft:#1f2b25; --warn:#e6bb73; --warn-bg:#2a2416;
+  --done:#86c9ac; --skipped:#5f6963; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 4rem}
+.wrap{max-width:38rem;margin:0 auto;display:flex;flex-direction:column;gap:2.5rem}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px} a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code{background:var(--soft);padding:.05rem .4rem;border-radius:4px;font-size:.9em}
+p{margin:0}
+h1,h2,h3,h4{margin:0}
+
+header.top{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
+header.top .date{font-weight:600;font-size:1.05rem}
+header.top .brand{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.1em}
+
+.topic{display:flex;flex-direction:column;gap:2.25rem;min-width:0}
+.eyebrow{color:var(--muted);font-size:.85rem;margin:0 0 .6rem}
+.eyebrow .sep{opacity:.5;margin:0 .25rem}
+.lesson-title{font-family:var(--font-read);font-weight:600;font-size:clamp(1.75rem,6vw,2.4rem);line-height:1.15;text-wrap:balance;margin:0}
+.nudge{background:var(--warn-bg);color:var(--fg);border-radius:10px;padding:.9rem 1rem;font-size:.95rem;line-height:1.5}
+
+/* The hour */
+ol.hour{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:2.25rem 1fr;gap:.9rem;min-width:0}
+.step-rail{display:flex;flex-direction:column;align-items:center}
+.step-n{width:2rem;height:2rem;border-radius:50%;background:var(--soft);color:var(--fg);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.9rem;flex:none;font-variant-numeric:tabular-nums}
+.step.main .step-n{background:var(--accent);color:var(--accent-ink)}
+.step-rail::after{content:"";flex:1;width:2px;background:var(--rail);margin:.4rem 0}
+.step:last-child .step-rail::after{display:none}
+.step-body{padding:.2rem 0 2.25rem;min-width:0;display:flex;flex-direction:column;gap:.75rem}
+.step:last-child .step-body{padding-bottom:0}
+.step h3{font-size:1rem;font-weight:600;display:flex;align-items:baseline;gap:.6rem}
+.step .mins{color:var(--muted);font-weight:400;font-size:.85rem;font-variant-numeric:tabular-nums}
+.step.main h3{font-size:1.1rem}
+.read{font-family:var(--font-read);font-size:1.1rem;line-height:1.6}
+.step.main .read{font-size:1.15rem}
+.lead-in{color:var(--muted);font-size:.85rem}
 .prompt{font-style:italic}
-.hour{display:flex;gap:3px;height:2rem;border-radius:6px;overflow:hidden;font-size:.75rem;font-weight:600}
-.hour span{display:flex;align-items:center;justify-content:center;background:var(--soft);color:var(--fg);white-space:nowrap;overflow:hidden;padding:0 .25rem}
-.hour span:nth-child(2){background:var(--accent);color:var(--accent-ink)}
-.muted{color:var(--muted)} .small{font-size:.85rem;margin:.25rem 0 0}
-.goal{color:var(--muted);margin:0 0 .75rem;font-size:.95rem}
-ul.sources{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem}
-li.src{display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap;font-size:.95rem}
-.tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;background:var(--soft);color:var(--fg);padding:.1rem .45rem;border-radius:999px;font-weight:600;white-space:nowrap}
-li.book .tag{background:transparent;border:1px solid var(--line)}
-.loc{color:var(--muted);font-size:.9rem}
-ol.lessons{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.35rem}
-ol.lessons li{display:grid;grid-template-columns:auto auto 1fr auto;gap:.5rem;align-items:baseline;font-size:.95rem;padding:.3rem 0;border-bottom:1px dashed var(--line)}
+.warn-inline{color:var(--warn);font-size:.95rem}
+h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600;margin-top:.5rem}
+
+/* Sources */
+ul.sources{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.85rem}
+li.src{display:grid;grid-template-columns:auto 1fr;gap:.7rem;align-items:start;min-width:0;line-height:1.45}
+.src-body{min-width:0;display:flex;flex-direction:column;gap:.15rem}
+.tag{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;background:var(--soft);color:var(--fg);padding:.2rem .5rem;border-radius:999px;font-weight:600;white-space:nowrap;margin-top:.15rem}
+.tag.book{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.src-loc,.src-note{color:var(--muted);font-size:.9rem}
+.excerpt{font-family:var(--font-read);font-size:1.08rem;line-height:1.65;border-left:3px solid var(--rail);padding:.25rem 0 .25rem 1rem;margin-top:.5rem}
+
+/* Blocks below the hour */
+.block{border-top:1px solid var(--line);padding-top:1.5rem;display:flex;flex-direction:column;gap:.9rem;min-width:0}
+.block h2{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}
+.unit-title{font-weight:600;font-size:1.05rem}
+.goal{color:var(--muted);font-size:.95rem;max-width:34rem}
+ol.lessons{list-style:none;padding:0;margin:.25rem 0 0;display:flex;flex-direction:column}
+ol.lessons li{display:grid;grid-template-columns:1.5rem 1fr;gap:.6rem;align-items:start;padding:.65rem 0;border-bottom:1px solid var(--line)}
 ol.lessons li:last-child{border-bottom:0}
-ol.lessons .dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--line);align-self:center}
-ol.lessons .done .dot{background:var(--done)} ol.lessons .skipped .dot{background:var(--skipped)} ol.lessons .pending .dot{background:var(--pending)}
-ol.lessons .current{font-weight:600} ol.lessons .current .dot{background:var(--accent);box-shadow:0 0 0 3px var(--soft)}
-ol.lessons .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-ol.lessons .st{font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
-ol.lessons .done,.lessons .skipped{color:var(--muted)}
-.excerpt{font-family:var(--font-read);font-size:1.05rem;line-height:1.6;border-left:3px solid var(--soft);padding:.25rem 0 .25rem 1rem;margin:1rem 0}
-footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:.75rem}
-a{color:var(--accent);text-underline-offset:2px} a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-code{background:var(--soft);padding:.05rem .35rem;border-radius:4px;font-size:.9em}
-@media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}}
+ol.lessons .glyph{width:1.5rem;text-align:center;color:var(--muted);font-weight:600;line-height:1.45}
+ol.lessons .done .glyph{color:var(--done)} ol.lessons .today .glyph{color:var(--accent)}
+ol.lessons .l-title{line-height:1.4}
+ol.lessons .l-meta{color:var(--muted);font-size:.8rem;margin-top:.1rem}
+ol.lessons .done .l-title,ol.lessons .skipped .l-title{color:var(--muted)}
+ol.lessons .today .l-title{font-weight:600}
+details.have-ready summary{cursor:pointer;color:var(--muted);font-size:.9rem;padding:.25rem 0}
+details.have-ready[open] summary{margin-bottom:.75rem}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+footer{color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1.25rem;line-height:1.55}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
 """
 
 
 def render(payload: dict) -> str:
     date = dt.date.fromisoformat(payload["date"])
-    nice = date.strftime("%A %-d %B %Y") if sys.platform != "win32" else date.strftime("%A %d %B %Y")
+    nice = f"{date.strftime('%A')} {date.day} {date.strftime('%B %Y')}"
     body = [
         "<title>Today's Lesson</title>",
         "<meta name=\"claude:viewport-fit-sides\" content=\"cover\">",
@@ -633,7 +679,7 @@ def render(payload: dict) -> str:
     for plan in payload["topics"]:
         body.append(render_topic(plan, date))
     body.append(
-        "<footer>When you've done the hour, reply in the Claude session that sent this: your 3–5 sentence note marks the day done. "
+        "<footer>When the hour is done, reply in the Claude session that sent this. Your 3–5 sentence note marks the day done. "
         "<code>skip</code>, <code>not today</code>, <code>too hard</code> and questions about the reading all work too.</footer>"
     )
     body.append("</div>")
