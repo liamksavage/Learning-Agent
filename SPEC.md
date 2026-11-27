@@ -21,7 +21,7 @@ The first curriculum is the philosophy plan that currently lives in the Claude D
 ## 3. Architecture
 
 ```
-  Claude Code scheduled task (daily, 6:30 ET, Sun–Fri)
+  Claude Code scheduled task (daily, 3:58 ET, Sun–Fri)
         │  fires a fresh cloud session on this repo
         ▼
   Morning session ─── reads curriculum + progress ───► picks today's lesson
@@ -127,7 +127,7 @@ philosophy:
 
 ## 5. The daily run
 
-Runs Sunday to Friday at 6:30am Eastern. Saturday has no run.
+Runs Sunday to Friday at 3:58am Eastern. Saturday has no run.
 
 1. Pull the branch. Load curriculum, progress and availability.
 2. Settle yesterday. If yesterday's lesson has a reply recorded, it is already done. If not, mark it `pending` and ask about it in today's message (section 6).
@@ -213,7 +213,7 @@ Everything above is keyed by `topic`. A second curriculum is a second YAML file 
 
 | Item | Why | When |
 | --- | --- | --- |
-| Approve one scheduled task (daily 6:30 ET, Sun–Fri, push on) | The morning run | Stage 1 |
+| One scheduled task (3:58am ET, Sun–Fri, push on) — created 2026-11-27 | The morning run | Stage 1 |
 | Approve a dedicated cloud environment with the source-site allow-list | Fetching texts | Stage 2 |
 | Nothing else | No API key, email service, Drive or Slack needed | — |
 
@@ -228,9 +228,8 @@ Cost: runs on your Claude subscription. If the agent ever needs anything that co
 
 ## 14. Decisions to confirm
 
-Settled: the writing task waits until its readings are done (section 5, Friday rule). Decided 2026-11-27.
+Settled: the writing task waits until its readings are done (section 5, Friday rule). Run time is 3:58am Eastern. Decided 2026-11-27.
 
 - **[confirm]** Scheduled sessions pushing to this repo: I believe a fresh scheduled session can commit and push, but I'll verify it on the first run of stage 1 and fall back to a dedicated branch if needed.
 - **[confirm]** Unreplied days count as not done and are served again the next working day.
 - **[confirm]** One stable Today page republished daily, rather than one page per day. Past days remain in notes and progress, not as pages.
-- **[confirm]** Run time 6:30am Eastern. The scheduler advises nudging off the half hour to avoid delays, so the actual cron will be 6:27.
